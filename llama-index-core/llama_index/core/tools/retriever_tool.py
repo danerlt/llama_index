@@ -24,7 +24,8 @@ against a knowledge base and retrieving a set of relevant documents.
 
 
 class RetrieverTool(AsyncBaseTool):
-    """Retriever tool.
+    """
+    Retriever tool.
 
     A tool making use of a retriever.
 
@@ -33,6 +34,7 @@ class RetrieverTool(AsyncBaseTool):
         metadata (ToolMetadata): The associated metadata of the query engine.
         node_postprocessors (Optional[List[BaseNodePostprocessor]]): A list of
             node postprocessors.
+
     """
 
     def __init__(
@@ -88,12 +90,10 @@ class RetrieverTool(AsyncBaseTool):
         for doc in docs:
             assert isinstance(doc.node, (Node, TextNode))
             node_copy = doc.node.model_copy()
-            node_copy.text_template = "{metadata_str}\n{content}"
-            node_copy.metadata_template = "{key} = {value}"
             content += node_copy.get_content(MetadataMode.LLM) + "\n\n"
         return ToolOutput(
             content=content,
-            tool_name=self.metadata.name,
+            tool_name=self.metadata.get_name(),
             raw_input={"input": query_str},
             raw_output=docs,
         )
@@ -114,12 +114,10 @@ class RetrieverTool(AsyncBaseTool):
         for doc in docs:
             assert isinstance(doc.node, (Node, TextNode))
             node_copy = doc.node.model_copy()
-            node_copy.text_template = "{metadata_str}\n{content}"
-            node_copy.metadata_template = "{key} = {value}"
             content += node_copy.get_content(MetadataMode.LLM) + "\n\n"
         return ToolOutput(
             content=content,
-            tool_name=self.metadata.name,
+            tool_name=self.metadata.get_name(),
             raw_input={"input": query_str},
             raw_output=docs,
         )
